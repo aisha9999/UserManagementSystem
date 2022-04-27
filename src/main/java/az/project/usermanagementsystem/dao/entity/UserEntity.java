@@ -14,19 +14,19 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table (name="user_table")
+@Table(name = "users")
 @Entity
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="user_id")
+    @Column(name = "id")
     private Long id;
 
-    @Column(name="first_name",nullable = false)
-    private String firstName;
+    @Column(name = "first_name")
+    private String firstName = "NO DATA";
 
-    @Column(name="last_name",nullable = false)
-    private String lastName;
+    @Column(name = "last_name")
+    private String lastName = "NO DATA";
 
     @Column(name = "username", unique = true, nullable = false)
     private String username;
@@ -37,13 +37,13 @@ public class UserEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "isActive", nullable = false, columnDefinition = "boolean default true")
+    @Column(name = "is_active")
     private Boolean isActive = true;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "users_roles",
-            joinColumns = @JoinColumn(name = "acc_id", referencedColumnName = "account_id"),
-            inverseJoinColumns = @JoinColumn(name = "r_id", referencedColumnName = "role_id"))
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<RoleEntity> roles = new HashSet<>();
 
     @CreationTimestamp
@@ -53,6 +53,4 @@ public class UserEntity {
     @UpdateTimestamp
     @Column(name = "user_updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
-
 }
