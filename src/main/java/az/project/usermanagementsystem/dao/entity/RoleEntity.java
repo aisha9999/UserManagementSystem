@@ -13,11 +13,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "role_table")
+@Table(name = "role")
 public class RoleEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "role_id")
+    @Column(name = "id")
     private Long id;
 
     @Enumerated(value = EnumType.STRING)

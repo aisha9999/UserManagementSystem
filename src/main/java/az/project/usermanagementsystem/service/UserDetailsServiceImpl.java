@@ -3,7 +3,6 @@ package az.project.usermanagementsystem.service;
 import az.project.usermanagementsystem.dao.entity.UserEntity;
 import az.project.usermanagementsystem.dao.repository.UserRepository;
 import az.project.usermanagementsystem.security.UserDetailsImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,8 +13,11 @@ import javax.transaction.Transactional;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserDetailsServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     @Transactional
