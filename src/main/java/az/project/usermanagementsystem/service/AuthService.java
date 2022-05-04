@@ -6,7 +6,7 @@ import az.project.usermanagementsystem.dao.entity.UserEntity;
 import az.project.usermanagementsystem.dao.repository.RoleRepository;
 import az.project.usermanagementsystem.dao.repository.UserRepository;
 import az.project.usermanagementsystem.dto.request.LoginRequest;
-import az.project.usermanagementsystem.dto.request.SignUpRequest;
+import az.project.usermanagementsystem.dto.request.UserRequest;
 import az.project.usermanagementsystem.dto.response.JwtResponse;
 import az.project.usermanagementsystem.security.JwtUtils;
 import az.project.usermanagementsystem.security.UserDetailsImpl;
@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,7 +34,6 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
-
     public AuthService(AuthenticationManager authenticationManager,
                        UserRepository userRepository,
                        RoleRepository roleRepository,
@@ -46,6 +44,7 @@ public class AuthService {
         this.roleRepository = roleRepository;
         this.encoder = encoder;
         this.jwtUtils = jwtUtils;
+
     }
 
     public JwtResponse authenticateUser(LoginRequest loginRequest) {
@@ -75,47 +74,33 @@ public class AuthService {
         return response;
     }
 
-    public void registerUser(SignUpRequest signUpRequest) {
-        log.info("Auth.register start for user: {}", signUpRequest.getUsername());
+    public void registerUser(UserRequest userRequest) {
+        log.info("Auth.register start for user: {}", userRequest.getUsername());
 
-        if (userRepository.existsByUsername(signUpRequest.getUsername()))
+        if (userRepository.existsByUsername(userRequest.getUsername()))
             throw new RuntimeException("Error: Username is already taken!");
 
-        if (userRepository.existsByEmail(signUpRequest.getEmail()))
+        if (userRepository.existsByEmail(userRequest.getEmail()))
             throw new RuntimeException("Error: Email is already exist!");
 
         // Create new user's account
         UserEntity user = UserEntity.builder()
-                .email(signUpRequest.getEmail())
-                .password(encoder.encode(signUpRequest.getPassword()))
-                .username(signUpRequest.getUsername())
+                .firstName(userRequest.getFirstName())
+                .lastName(userRequest.getLastName())
+                .email(userRequest.getEmail())
+                .password(encoder.encode(userRequest.getPassword()))
+                .username(userRequest.getUsername())
+                .roles(new HashSet<>())
                 .build();
 
-        Set<String> strRoles = signUpRequest.getRoles();
-
-        Set<RoleEntity> roles = new HashSet<>();
-
-        if (strRoles == null) {
-            RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                if ("admin".equals(role)) {
-                    RoleEntity adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                    roles.add(adminRole);
-                } else {
-                    RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)
-                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                    roles.add(userRole);
-                }
-            });
-        }
-
-        user.setRoles(roles);
+        RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        user.getRoles().add(userRole);
         userRepository.save(user);
 
-        log.info("Auth.register end for user: {}", signUpRequest.getUsername());
+
+        log.info("Auth.register end for user: {}", userRequest.getUsername());
     }
+
+
 }

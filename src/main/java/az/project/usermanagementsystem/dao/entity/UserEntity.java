@@ -14,8 +14,9 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users")
+@ToString
 @Entity
+@Table(name = "users")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,20 +38,20 @@ public class UserEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "is_active")
+    @Column(name = "is_active", columnDefinition = "boolean default true")
     private Boolean isActive = true;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<RoleEntity> roles = new HashSet<>();
 
     @CreationTimestamp
-    @Column(name = "user_created_at", nullable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "created_at", columnDefinition = "timestamp default now()",nullable = false)
+    private LocalDateTime createdAt= LocalDateTime.now();
 
     @UpdateTimestamp
-    @Column(name = "user_updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    @Column(name = "updated_at", columnDefinition = "timestamp default now()", nullable = false)
+    private LocalDateTime updatedAt=LocalDateTime.now();
 }

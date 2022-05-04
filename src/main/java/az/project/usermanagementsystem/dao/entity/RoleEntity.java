@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Entity
 @Table(name = "role")
 public class RoleEntity {
@@ -26,10 +27,15 @@ public class RoleEntity {
     private ERole name;
 
     @CreationTimestamp
-    @Column(name = "r_created_at")
-    private LocalDateTime createdAt;
+    @Column(name = "created_at", columnDefinition = "timestamp default now()",nullable = false)
+    private LocalDateTime createdAt= LocalDateTime.now();
 
     @UpdateTimestamp
-    @Column(name = "r_updated_at")
-    private LocalDateTime updatedAt;
+    @Column(name = "updated_at", columnDefinition = "timestamp default now()", nullable = false)
+    private LocalDateTime updatedAt=LocalDateTime.now();
+
+    public RoleEntity(Long id, ERole name) {
+        this.id = id;
+        this.name = name;
+    }
 }
