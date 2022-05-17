@@ -2,8 +2,7 @@ package az.project.usermanagementsystem.config;
 
 import az.project.usermanagementsystem.security.AuthEntryPointJwt;
 import az.project.usermanagementsystem.security.AuthTokenFilter;
-import az.project.usermanagementsystem.service.AuthServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import az.project.usermanagementsystem.service.UserDetailsImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,14 +26,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
         prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    AuthServiceImpl userDetailsService;
-    @Autowired
-    private AuthEntryPointJwt unauthorizedHandler;
+    private final UserDetailsImpl userDetailsService;
 
-    @Bean
-    public AuthTokenFilter authenticationJwtTokenFilter() {
-        return new AuthTokenFilter();
+    private final AuthEntryPointJwt unauthorizedHandler;
+
+    private final AuthTokenFilter authTokenFilter;
+
+    public WebSecurityConfig(UserDetailsImpl userDetailsService, AuthEntryPointJwt unauthorizedHandler, AuthTokenFilter authTokenFilter) {
+        this.userDetailsService = userDetailsService;
+        this.unauthorizedHandler = unauthorizedHandler;
+        this.authTokenFilter = authTokenFilter;
     }
 
     @Override
@@ -61,6 +62,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/user/**").permitAll()
                 .anyRequest().authenticated();
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,7 +39,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getById(Long id) {
-        UserEntity userEntity = userRepository.getById(id);
+        UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Id not found"));
         return UserDto.builder()
                 .id(userEntity.getId())
                 .firstName(userEntity.getFirstName())
@@ -54,8 +53,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(Long id, UserDto dto) {
-        UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Id not found"));
+    public void update( UserDto dto) {
+        UserEntity userEntity =null;
         userEntity.setId(dto.getId());
         userEntity.setFirstName((dto.getFirstName()));
         userEntity.setLastName((dto.getLastName()));

@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import az.project.usermanagementsystem.dto.response.ResponseMessage;
 import az.project.usermanagementsystem.model.FileInfo;
 import az.project.usermanagementsystem.service.FileService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,8 +19,12 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 @RestController
 @CrossOrigin("http://localhost:8081")
 public class FileController {
-    @Autowired
-    FileService fileService;
+    private final FileService fileService;
+
+    public FileController(FileService fileService) {
+        this.fileService = fileService;
+    }
+
     @PostMapping("/upload")
     public ResponseEntity<ResponseMessage> uploadFiles(@RequestParam("files") MultipartFile[] files) {
         String message = "";

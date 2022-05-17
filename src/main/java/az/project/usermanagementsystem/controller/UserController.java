@@ -32,9 +32,9 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}")
-    public void update(@PathVariable Long id, @RequestBody UserDto dto) {
-        userService.update(id, dto);
+    @PutMapping("/update")
+    public void update(@RequestBody UserDto dto) {
+        userService.update(dto);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
